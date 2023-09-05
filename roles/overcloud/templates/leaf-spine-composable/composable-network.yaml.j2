@@ -1,0 +1,14 @@
+#----------------------------------------------------------------------------------#
+- name: External
+  vip: true
+  name_lower: external
+  ip_subnet: '{{ osc.publicapisubnet }}/{{ osc.publicapiprefix }}'
+  allocation_pools: [{'start': '{{ osc.publicapipoolstart }}', 'end': '{{ osc.publicapipoolend }}'}]
+  gateway_ip: '{{ osc.publicapigateway }}'
+#----------------------------------------------------------------------------------#
+- name: InternalApi
+  name_lower: internal_api
+  vip: true
+  ip_subnet: '{{ osc.interapisubnet }}/{{ osc.interapiprefix }}'
+  allocation_pools: [{'start': '{{ osc.interapipoolstart }}', 'end': '{{ osc.interapipoolend }}'}]
+#----------------------------------------------------------------------------------#

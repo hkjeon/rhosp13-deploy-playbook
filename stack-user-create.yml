@@ -1,0 +1,8 @@
+---
+- name: Main for RedHat OpenStack 13 (Queens) Install
+  hosts: director
+  gather_facts: yes
+
+  tasks:
+    - import_role:
+        name: account

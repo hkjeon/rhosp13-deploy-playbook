@@ -1,0 +1,104 @@
+parameter_defaults:
+  # ------------------------------------------------------- #
+  # !!! Warning !!! Update/Change Network Properties
+  # ------------------------------------------------------- #
+  #ControllerNetworkDeploymentActions: ['CREATE','UPDATE']
+  #ComputeOvsNetworkDeploymentActions: ['CREATE','UPDATE']
+  # ------------------------------------------------------- #
+
+  # ------------------------------------------------------- #
+  # !!! Warning !!! Node Replacement and Reuse Option
+  # ------------------------------------------------------- #
+  #ControllerRemovalPolicies: [{'resource_list': [1]}]
+  #ControllerRemovalPoliciesMode: update
+  #ComputeOvsRemovalPolicies: []
+  #ComputeOvsRemovalPoliciesMode: update
+  # ------------------------------------------------------- #
+
+  # ------------------------------------------------------- #
+  # Nova Scheduler Filter
+  # ------------------------------------------------------- #
+  NovaSchedulerAvailableFilters: ["nova.scheduler.filters.all_filters","nova.scheduler.filters.pci_passthrough_filter.PciPassthroughFilter"]
+  NovaSchedulerDefaultFilters: ['RetryFilter','AvailabilityZoneFilter','DiskFilter','RamFilter','CoreFilter','NUMATopologyFilter','ComputeFilter','ComputeCapabilitiesFilter','ImagePropertiesFilter','ServerGroupAntiAffinityFilter','ServerGroupAffinityFilter','PciPassthroughFilter','AggregateCoreFilter','AggregateDiskFilter','AggregateRamFilter','AggregateInstanceExtraSpecsFilter']
+  # ------------------------------------------------------- #
+
+  # ------------------------------------------------------- #
+  #   # Neutron Device/Bridge Mapping
+  #   # name rule : AZname-VNFname-PORTtype
+  # ------------------------------------------------------- #
+  # NeutronBridgeMappings: "physnet-az1-svc-dpdk:br-dpdkbond0"
+  NeutronNetworkVLANRanges: "{{ neutron.physnet1 }}"
+  NeutronML2PhysicalNetworkMtus: "{{ neutron.physnet1 }}:{{ neutron.mtu }}"
+  # ------------------------------------------------------- #
+  # **** Controller Extraconfig ****
+  # ------------------------------------------------------- #
+  # Configuration Controller ratio, PCI-Passthrough, DHCP AZ
+  # ------------------------------------------------------- #
+  ControllerExtraConfig:
+    ntp::servers: [ "{{ osc.ntp1 }}", "{{ osc.ntp2 }}","{{ osc.ntp3 }}" ]
+    nova::ram_allocation_ratio: 1.0
+    nova::api::allow_resize_to_same_host: true
+    nova::disk_allocation_ratio: 1.0
+    nova::cpu_allocation_ratio: 1.0
+    glance::api::limit_param_default: 100
+    nova::pci::aliases:
+      - name: "pcipt25g01"
+        device_type: "type-PF"
+        vendor_id: "8086"
+        product_id: "158b"
+  # ------------------------------------------------------- #
+    neutron::agents::ml2::ovs::enable_security_group: true
+    neutron::plugins::ml2::enable_security_group: true
+    neutron::plugins::ml2::path_mtu: 1500
+  # ------------------------------------------------------- #
+    neutron::server::network_scheduler_driver: neutron.scheduler.dhcp_agent_scheduler.AZAwareWeightScheduler
+    neutron::server::router_scheduler_driver: neutron.scheduler.l3_agent_scheduler.AZLeastRoutersScheduler
+    neutron::server::dhcp_load_type: networks
+  # ------------------------------------------------------- #
+    neutron::server::default_availability_zones:
+      - '{{ comp.zone }}'
+  # ------------------------------------------------------- #
+
+  # ------------------------------------------------------- #
+  # **** ComputeOvsApp Parameters ****
+  # ------------------------------------------------------- #
+  # Configuration ComputeOvsApp Leaf0
+  # ------------------------------------------------------- #
+  ComputeOvsParameters:
+    NeutronBridgeMappings:
+      - {{ neutron.physnet1 }}:{{ neutron.bridge1 }}
+    ExtraSysctlSettings:
+      net.netfilter.nf_conntrack_max:
+        value: 1000000
+      net.nf_conntrack_max:
+        value: 1000000
+      net.ipv6.conf.all.disable_ipv6:
+        value: 1
+      kernel.sysrq:
+        value: 1
+  # ------------------------------------------------------- #
+  # **** ComputeOvsApp Extraconfig ****
+  # ------------------------------------------------------- #
+  # ComputeOvsApp Leaf0 ExtraConfig
+  # ------------------------------------------------------- #
+  ComputeOvsExtraConfig:
+    neutron::agents::ml2::ovs::enable_security_group: true
+    neutron::plugins::ml2::enable_security_group: true
+    nova::compute::allow_resize_to_same_host: true
+    nova::compute::force_config_drive: true
+    nova::compute::resume_guests_state_on_host_boot: true
+    nova::compute::libvirt::libvirt_inject_password: true
+    nova::compute::libvirt::libvirt_inject_key: true
+    nova::compute::libvirt::libvirt_inject_partition: -1
+    nova::compute::libvirt::vncserver_listen: "%{hiera('internal_api')}"
+    nova::compute::vncserver_proxyclient_address: "%{hiera('internal_api')}"
+    cold_migration_ssh_inbound_addr: "%{hiera('internal_api')}"
+    live_migration_ssh_inbound_addr: "%{hiera('internal_api')}"
+    nova::migration::libvirt::live_migration_inbound_addr: "%{hiera('internal_api')}"
+    nova::my_ip: "%{hiera('internal_api')}"
+    tripleo::profile::base::database::mysql::client::mysql_client_bind_address: "%{hiera('internal_api')}"
+    # ---- Add availability zone Neutron ---- #
+    neutron::agents::dhcp::availability_zone: {{ comp.zone }}
+    # ---- Add availability zone Neutron ---- #
+    # ------------------------------------------------------- #
+

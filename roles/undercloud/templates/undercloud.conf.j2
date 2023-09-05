@@ -1,0 +1,27 @@
+[DEFAULT]
+undercloud_hostname = {{ director.hostname }}.{{ domain }}
+overcloud_domain_name = {{ domain }}
+local_ip = {{ director.ip }}/{{ director.prefix }}
+undercloud_ntp_servers = {{ ntp1 }}
+subnets = {{ overcloud.subnet }}
+local_subnet = {{ overcloud.subnet }}
+local_interface = {{ director.interface }}
+generate_service_certificate = false
+inspection_extras = false
+undercloud_debug = false
+enable_tempest = false
+enable_telemetry = false
+enable_ui = false
+enable_routed_networks = true
+
+[auth]
+#undercloud_admin_password = core!234
+
+[{{ overcloud.subnet }}]
+cidr = {{ director.cidr }}/{{ director.prefix }}
+dhcp_start = {{ overcloud.dhcpstart }}
+dhcp_end = {{ overcloud.dhcpend }}
+inspection_iprange = {{ overcloud.inspectstart }},{{ overcloud.inspectend }}
+gateway = {{ osc.pxegateway }}
+masquerade = False 
+

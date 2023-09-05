@@ -1,0 +1,32 @@
+resource_registry:
+  OS::TripleO::Controller::Net::SoftwareConfig: /home/stack/templates/leaf-spine-region/leaf0-main/controller.yaml
+  OS::TripleO::ComputeOvs::Net::SoftwareConfig: /home/stack/templates/leaf-spine-region/leaf0-main/vm-compute-ovs.yaml
+
+parameter_defaults:
+  # ------------------------------------------------------- #
+  ServiceNetMap:
+    KeystoneAdminApiNetwork: internal_api
+  # ------------------------------------------------------- #
+    ComputeOvsHostnameResolveNetwork: internal_api
+  # ------------------------------------------------------- #
+  ControlPlaneSubnet: {{ overcloud.subnet }}
+  # ------------------------------------------------------- #
+  ControllerControlPlaneSubnet: {{ overcloud.subnet }}
+  ComputeOvsControlPlaneSubnet: {{ overcloud.subnet }}
+  # ------------------------------------------------------- #
+  ControlPlane0DefaultRoute: {{ osc.pxegateway }}
+  ControlPlane0SubnetCidr: '{{ osc.pxeprefix }}'
+  # ------------------------------------------------------- #
+  AZ-0-OSC-CP0EC2MetadataIp: {{ osc.pxegateway }}
+  # ------------------------------------------------------- #
+  # ------------------------------------------------------- #
+  InternalApiSupernet: {{ osc.interapisubnet }}/{{ osc.interapiprefix }}
+  # ------------------------------------------------------- #
+  InternalApiNetCidr: {{ osc.interapisubnet }}/{{ osc.interapiprefix }}
+  InternalApiAllocationPools: [{'start': '{{ osc.interapipoolstart }}', 'end': '{{ osc.interapipoolend }}'}]
+  InternalApiNetworkVlanID: 100
+  # ------------------------------------------------------- #
+  ExternalNetCidr: {{ osc.publicapisubnet }}/{{ osc.publicapiprefix }}
+  ExternalAllocationPools: [{'start': '{{ osc.publicapipoolstart }}', 'end': '{{ osc.publicapipoolend }}'}]
+  ExternalNetworkVlanID: 101
+  # ------------------------------------------------------- #

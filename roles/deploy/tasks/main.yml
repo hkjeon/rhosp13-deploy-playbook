@@ -1,0 +1,21 @@
+---
+- name: Create deploy.sh script
+  template:
+    src: ../templates/http-deploy.j2
+    dest: /home/stack/deploy.sh
+    mode: '0755'
+
+- name: Copy OpenStack Overcloud environment scripts.
+  copy:
+    src: ../files/{{ item }}
+    dest: /home/stack/openstack-scripts/
+    mode: '0755'
+  with_items:
+    - ovs-flavor.sh
+    - glance.sh
+    - network-subnet.sh
+    - ovs-vm-create.sh
+    - zone-create.sh
+
+- debug:
+    msg: "Please execute /home/stack/deploy.sh script file..!!" 

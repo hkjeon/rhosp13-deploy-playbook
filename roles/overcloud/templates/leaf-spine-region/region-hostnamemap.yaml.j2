@@ -1,0 +1,16 @@
+parameter_defaults:
+  ControllerSchedulerHints:
+    'capabilities:node': 'controller-%index%'
+  ComputeOvsSchedulerHints:
+    'capabilities:node': 'compute-ovs-%index%'
+  HostnameMap:
+    overcloud-controller-0: {{ osc1.name }}
+    overcloud-controller-1: {{ osc2.name }}
+    overcloud-controller-2: {{ osc3.name }}
+
+#-----------------------------------------------------------#
+# Leaf0                                                     #
+#-----------------------------------------------------------#
+    overcloud-compute-ovs-0: {{ comp1.name }}
+    overcloud-compute-ovs-1: {{ comp2.name }}
+

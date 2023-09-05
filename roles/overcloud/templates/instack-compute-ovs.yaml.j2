@@ -1,0 +1,17 @@
+nodes:
+  - "name": "{{ comp1.name }}"
+    "pm_addr": "{{ kvm.ip }}"
+    "mac": ["{{ comp1.mac }}"]
+    "pm_type": "ipmi"
+    "pm_user": "admin"
+    "pm_password": "hpinvent"
+    "pm_port": "{{ comp1.pmport }}"
+    "capabilities": "node:compute-ovs-0,boot_option:local"
+  - "name": "{{ comp2.name }}"
+    "pm_addr": "{{ kvm.ip }}"
+    "mac": ["{{ comp2.mac }}"]
+    "pm_type": "ipmi"
+    "pm_user": "admin"
+    "pm_password": "hpinvent"
+    "pm_port": "{{ comp2.pmport }}"
+    "capabilities": "node:compute-ovs-1,boot_option:local"

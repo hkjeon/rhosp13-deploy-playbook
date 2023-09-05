@@ -1,0 +1,33 @@
+---
+- name: Create stack and suser account
+  user:
+    name: "{{ item }}"
+    password: "{{ 'dlxpzm#01' | password_hash('sha256') }}"
+    state: present
+  with_items:
+    - stack
+  become: yes
+
+- name: touch sudoers file for stack user
+  file:
+    path: "/etc/sudoers.d/stack"
+    state: touch
+    owner: root
+    group: root
+    mode: '0440'
+  become: yes
+
+- name: Add sudoers Info for Users
+  lineinfile:
+    path: "/etc/sudoers.d/{{ item }}"
+    line: "{{ item }} ALL=(root) NOPASSWD:ALL"
+  with_items:
+    - stack
+  become: yes
+
+- name: Expiring password for Users
+  shell: "sudo chage -E -1 -I -1 -m 0 -M 99999 {{ item }}"
+  with_items:
+    - stack
+    - root
+  become: yes

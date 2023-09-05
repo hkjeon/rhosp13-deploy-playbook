@@ -1,0 +1,86 @@
+---
+kvm:
+  ip: 55.55.14.4
+repo:
+  ip: 55.55.10.200
+domain: hk.com
+ntp1: 55.55.14.4
+ntp2: 55.55.18.4
+director:
+  hostname: rhosp-hk-director
+  ip: 55.55.14.205
+  prefix: 24
+  cidr: 55.55.14.0
+  interface: eth0
+overcloud:
+  subnet: AZ-0-OSC-CP0
+  dhcpstart: 55.55.14.207
+  dhcpend: 55.55.14.219
+  inspectstart: 55.55.14.231
+  inspectend: 55.55.14.240
+osc:
+  pxegateway: 55.55.14.1
+  pxeprefix: 24
+  interapisubnet: 55.55.18.0
+  interapiprefix: 24
+  interapipoolstart: 55.55.18.210
+  interapipoolend: 55.55.18.230
+  interapigateway: 55.55.18.1
+  publicapisubnet: 55.55.17.0
+  publicapiprefix: 24
+  publicapipoolstart: 55.55.17.210
+  publicapipoolend: 55.55.17.230
+  publicapigateway: 55.55.17.1
+  ntp1: 55.55.14.4
+  ntp2: 55.55.18.4
+  ntp3: 55.55.17.4
+pcs:
+  pxevip: 55.55.14.240
+  publicapivip: 55.55.17.240
+  interapivip: 55.55.18.240
+  redisvip: 55.55.18.241
+osc1:
+  name: hk-osc-1
+  mac: 52:54:00:71:de:49
+  pmport: 6251
+  pxeip: 55.55.14.13
+  publicapiip: 55.55.17.213
+  interapiip: 55.55.18.213
+osc2:
+  name: hk-osc-2
+  mac: 52:54:00:ad:16:b1
+  pmport: 6252
+  pxeip: 55.55.14.14
+  publicapiip: 55.55.17.214
+  interapiip: 55.55.18.214  
+osc3:
+  name: hk-osc-3
+  mac: 52:54:00:34:4f:42
+  pmport: 6253
+  pxeip: 55.55.14.15
+  publicapiip: 55.55.17.215
+  interapiip: 55.55.18.215
+comp:
+  zone: AZ-0-COMP-OVS
+  internal_api_gw: 55.55.18.1
+comp1:
+  name: hk-comp1
+  mac: 52:54:00:82:de:60
+  pmport: 6241
+  pxeip: 55.55.14.21
+  interapiip: 55.55.18.21  
+comp2:
+  name: hk-comp2
+  mac: 52:54:00:6d:3b:4d
+  pmport: 6242
+  pxeip: 55.55.14.22
+  interapiip: 55.55.18.22
+neutron:
+  physnet1: physnet-az0-ovs-svc0
+  mtu: 1500
+  bridge1: br-service0
+glance:
+  nfs: 55.55.14.4:/data/nfs/rhosp-hk-glance-images
+  volume: 55.55.14.4:/data/nfs/rhosp-hk-cinder-volumes
+  backup: 55.55.14.4:/data/nfs/rhosp-hk-cinder-backups
+

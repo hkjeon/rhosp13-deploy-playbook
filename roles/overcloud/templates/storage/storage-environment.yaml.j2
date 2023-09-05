@@ -1,0 +1,21 @@
+parameter_defaults:
+  CinderEnableIscsiBackend: false
+  CinderEnableRbdBackend: false
+  NovaEnableRbdBackend: false
+  GlanceBackend: file
+  GnocchiBackend: file
+
+# Glance NFS    -------- #
+  GlanceNfsEnabled: true
+  GlanceNfsShare: '{{ glance.nfs }}'
+  GlanceNfsOptions: 'nfsvers=3,rw,intr,bg,context=system_u:object_r:glance_var_lib_t:s0'
+# Cinder Volumes -------- #
+  CinderEnableNfsBackend: true
+  CinderNfsMountOptions: 'nfsvers=3,rw,sync,intr,bg'
+  CinderNfsServers: '{{ glance.volume }}'
+# Cidner Backups
+  CinderBackupBackend: nfs
+  CinderBackupNfsMountOptions: 'nfsvers=3,rw,sync,intr,bg'
+  CinderBackupNfsShare: '{{ glance.backup }}'
+# --------------------------------------------------------------------------#
+

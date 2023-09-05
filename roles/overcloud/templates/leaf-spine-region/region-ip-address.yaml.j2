@@ -1,0 +1,39 @@
+# Environment file demonstrating how to pre-assign IPs to all node types
+resource_registry:
+  OS::TripleO::Network::InternalApi: /usr/share/openstack-tripleo-heat-templates/network/internal_api.yaml
+  OS::TripleO::Controller::Ports::ExternalPort: /usr/share/openstack-tripleo-heat-templates/network/ports/external_from_pool.yaml
+  OS::TripleO::Controller::Ports::InternalApiPort: /usr/share/openstack-tripleo-heat-templates/network/ports/internal_api_from_pool.yaml
+
+  OS::TripleO::ComputeOvs::Ports::ExternalPort: /usr/share/openstack-tripleo-heat-templates/network/ports/external_from_pool.yaml
+  OS::TripleO::ComputeOvs::Ports::InternalApiPort: /usr/share/openstack-tripleo-heat-templates/network/ports/internal_api_from_pool.yaml
+
+
+parameter_defaults:
+  # ------------------------------------------------------------- #
+  # Leaf0 Controller IPs Pool
+  # ------------------------------------------------------------- #
+  ControllerIPs:
+    ctlplane:
+    - {{ osc1.pxeip }}
+    - {{ osc2.pxeip }}
+    - {{ osc3.pxeip }}
+    internal_api:
+    - {{ osc1.interapiip }}
+    - {{ osc2.interapiip }}
+    - {{ osc3.interapiip }}
+    external:
+    - {{ osc1.publicapiip }}
+    - {{ osc2.publicapiip }}
+    - {{ osc3.publicapiip }}
+
+  # ------------------------------------------------------------- #
+  # Leaf0 ComputeOvs IPs Pool
+  # ------------------------------------------------------------- #
+  ComputeOvsIPs:
+    ctlplane:
+    - {{ comp1.pxeip }}
+    - {{ comp2.pxeip }}
+    internal_api:
+    - {{ comp1.interapiip }}
+    - {{ comp2.interapiip }}
+

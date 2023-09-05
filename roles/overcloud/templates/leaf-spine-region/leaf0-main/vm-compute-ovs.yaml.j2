@@ -1,0 +1,72 @@
+heat_template_version: queens
+description: >
+  Software Config to drive os-net-config to configure VLANs for the Compute role.
+# ---------------------------------------------------- #
+parameters:
+  ControlPlaneIp:
+    type: string
+  InternalApiIpSubnet:
+    type: string
+  InternalApiNetworkVlanID:
+    type: number
+  ControlPlane0SubnetCidr:
+    type: string
+  ControlPlane0DefaultRoute:
+    type: string
+  {{ overcloud.subnet }}EC2MetadataIp:
+    type: string
+# ---------------------------------------------------- #
+resources:
+  OsNetConfigImpl:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      group: script
+      config:
+        str_replace:
+          template:
+            get_file: /usr/share/openstack-tripleo-heat-templates/network/scripts/run-os-net-config.sh
+          params:
+            $network_config:
+              network_config:
+# ---------------------------------------------------- #
+              - type: interface
+                name: eth0
+                use_dhcp: false
+                addresses:
+                - ip_netmask:
+                    list_join:
+                    - /
+                    - - get_param: ControlPlaneIp
+                      - get_param: ControlPlane0SubnetCidr
+                routes:
+                - ip_netmask: 169.254.169.254/32
+                  next_hop:
+                    get_param: {{ overcloud.subnet }}EC2MetadataIp
+# ---------------------------------------------------- #
+              - type: interface
+                name: eth1
+                use_dhcp: false
+                addresses:
+                - ip_netmask:
+                    get_param: InternalApiIpSubnet
+                routes:
+                - default: true
+                  next_hop: {{ comp.internal_api_gw }} 
+# ---------------------------------------------------- #
+# Instance External : VM Network
+# ---------------------------------------------------- #
+              - type: ovs_bridge
+                name: br-service0
+                use_dhcp: false
+                mtu: 1500
+                members:
+                  - type: interface
+                    name: eth2
+                    mtu: 1500
+# ---------------------------------------------------- #
+outputs:
+  OS::stack_id:
+    description: The OsNetConfigImpl resource.
+    value:
+      get_resource: OsNetConfigImpl
+

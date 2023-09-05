@@ -1,0 +1,124 @@
+---
+- name : Configuration Undercloud Hostname
+  hostname:
+    name: "{{ director.hostname }}"
+  become: yes
+    #- name:  Configuration Undercloud Hostname
+    #  shell: hostnamectl set-hostname {{ director.hostname }}
+
+- name : Configuration Undercloud transient Hostname
+  shell: hostnamectl set-hostname --transient {{ director.hostname }}
+
+- name: Configuration RHOSP 13.0.7 Repository
+  template:
+    src: ../templates/rhosp13.repo.j2
+    dest: /etc/yum.repos.d/rhosp13.repo
+  become: yes
+
+- name: Install some packages
+  yum: state=latest name={{ item }}
+  with_items:
+    - net-tools
+    - vim
+    - wget
+    - curl
+    - traceroute
+    - tcpdump
+  become: yes
+
+- name: yum update
+  yum:
+    name: "*"
+    state: latest
+  become: yes
+
+- name: Install tripleo client
+  yum:
+    name: python-tripleoclient
+    state: latest
+  become: yes
+
+- name: Create the undercloud.conf
+  template:
+    src: ../templates/undercloud.conf.j2
+    dest: /home/stack/undercloud.conf
+
+- name: Install Undercloud | Please wait...
+  shell: openstack undercloud install
+
+- name: Check overcloud-images Directory
+  stat:
+    path: /home/stack/overcloud-images
+  register: directory_check
+- debug:
+    msg: "overcloud-images directory exists"
+  when: directory_check.stat.exists
+
+- name: Check templates Directory
+  stat:
+    path: /home/stack/overcloud-images
+  register: templates_check
+- debug:
+    msg: "templates directory exists"
+  when: templates_check.stat.exists
+
+- name: Make Directory overcloud-images and templates
+  file:
+    path: /home/stack/{{ item }}
+    state: directory
+    owner: stack
+    group: stack
+  with_items:
+    - overcloud-images
+    - templates
+
+- name: Copy for Overcloud Images | Please wait...
+  copy:
+    src: ../files/{{ item }}
+    dest: /home/stack/overcloud-images/
+  with_items:
+    - ironic-python-agent-13.0-20190806.1.x86_64.tar
+    - overcloud-full-13.0-20190806.1.x86_64.tar
+    - container_images.tar
+
+- name: unarchive for Overcloud Images
+  unarchive:
+    remote_src: true
+    src: /home/stack/overcloud-images/{{ item }}
+    dest: /home/stack/overcloud-images/
+  with_items:
+    - ironic-python-agent-13.0-20190806.1.x86_64.tar
+    - overcloud-full-13.0-20190806.1.x86_64.tar
+
+- name: Upload Overcloud Images into Undercloud
+  shell: source /home/stack/stackrc && openstack overcloud image upload --image-path /home/stack/overcloud-images/
+
+- name: Upload RedHat OpenStack Container Images
+  shell: docker load < /home/stack/overcloud-images/container_images.tar
+  become: yes
+  become_method: sudo
+
+- name: Check docker images Repo IP Address
+  shell: docker images | grep 192.168.100.100 | awk '{print $1":"$2}' > /tmp/test.txt
+  become: yes
+  become_method: sudo
+
+- name: Change docker tag IP Address for Director
+  shell: for i in $(cat /tmp/test.txt); do echo ${i} | awk -F "/" '{print "docker tag 192.168.100.100:8787/"$2"/"$3 " {{ director.ip }}:8787/"$2"/"$3}' | sh -x; done
+  become: yes
+  become_method: sudo
+
+- name: Push docker images | Please wait...
+  shell: docker images | grep {{ director.ip }}:8787 | awk '{print "docker push "$1":"$2}' | sh -x 
+  become: yes
+  become_method: sudo
+
+- name: Delete old docker images repo IP Address 
+  shell: docker images | grep 192.168.100.100 | awk '{print "docker rmi "$1":"$2}' | sh -x
+  become: yes
+  become_method: sudo
+
+- name: False tls-verify config for neutron-server 
+  shell: skopeo inspect --tls-verify=false docker://{{ director.ip }}:8787/rhosp13/openstack-neutron-server:13.0-91
+  become: yes
+  become_method: sudo

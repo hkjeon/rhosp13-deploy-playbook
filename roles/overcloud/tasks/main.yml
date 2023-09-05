@@ -1,0 +1,120 @@
+---
+- name: Make instackenv Directory
+  file:
+    path: /home/stack/instackenv
+    state: directory
+    owner: stack
+    group: stack
+
+- name: Make Directory for OpenStack Deploy
+  file:
+    path: /home/stack/templates/{{ item }}
+    state: directory
+    owner: stack
+    group: stack
+  with_items:
+    - etc
+    - leaf-spine-composable
+    - leaf-spine-region
+    - network
+    - storage
+
+- name: Make Network Directory for OpenStack Nodes
+  file:
+    path: /home/stack/templates/leaf-spine-region/{{ item }}
+    state: directory
+    owner: stack
+    group: stack
+  with_items:
+    - leaf0-main
+    - leaf1-dell
+
+- name: Make instackenv file for OpenStack Controller
+  template:
+    src: ../templates/osc-instack.yaml.j2
+    dest: /home/stack/instackenv/osc-instack.yaml
+
+- name: Make instackenv file for OpenStack Compute
+  template:
+    src: ../templates/instack-compute-ovs.yaml.j2
+    dest: /home/stack/instackenv/instack-compute-ovs.yaml
+
+- name: Check Power Control for OpenStack Overcloud Nodes
+  shell: ipmitool -I lanplus -H {{ kvm.ip }} -p "{{ item }}" -U admin -Phpinvent power status
+  register: power_status
+  with_items:
+    - "{{ osc1.pmport }}"
+    - "{{ osc2.pmport }}"
+    - "{{ osc3.pmport }}"
+    - "{{ comp1.pmport }}"
+    - "{{ comp2.pmport }}"
+
+      #- name: Node import for OpenStack Controller
+      #  shell: source /home/stack/stackrc && openstack overcloud node import --introspect --provide /home/stack/instackenv/osc-instack.yaml
+
+      #- name: Node import for OpenStack Compute
+      #  shell: source /home/stack/stackrc && openstack overcloud node import --introspect --provide /home/stack/instackenv/instack-compute-ovs.yaml
+
+- name: Create the leaf-spine-composable
+  template:
+    src: ../templates/leaf-spine-composable/{{ item }}.j2
+    dest: /home/stack/templates/leaf-spine-composable/{{ item }}
+  with_items:
+    - composable-network.yaml
+    - composable-roles.yaml
+
+- name: Create the leaf-spine-region
+  template:
+    src: ../templates/leaf-spine-region/{{ item }}.j2
+    dest: /home/stack/templates/leaf-spine-region/{{ item }}
+  with_items:
+    - region-environment.yaml
+    - region-extraconfig.yaml
+    - region-hostnamemap.yaml
+    - region-ip-address.yaml
+    - region-nodecount.yaml
+
+- name: Create Network file for OpenStack Nodes
+  template:
+    src: ../templates/leaf-spine-region/leaf0-main/{{ item }}.j2
+    dest: /home/stack/templates/leaf-spine-region/leaf0-main/{{ item }}
+  with_items:
+    - controller.yaml
+    - vm-compute-ovs.yaml
+
+- name: Create Network Environment 
+  template:
+    src: ../templates/network/{{ item }}.j2
+    dest: /home/stack/templates/network/{{ item }}
+  with_items:
+    - virtual-ip-address.yaml
+    - config-neutron.yaml
+
+- name: Create Storage Environment 
+  template:
+    src: ../templates/storage/{{ item }}.j2
+    dest: /home/stack/templates/storage/{{ item }}
+  with_items:
+    - storage-environment.yaml
+    - disable-swift.yaml
+    - disable-ceph.yaml
+
+- name: Create etc Environment
+  template:
+    src: ../templates/etc/{{ item }}.j2
+    dest: /home/stack/templates/etc/{{ item }}
+  with_items:
+    - config-default.yaml
+    - firstboot.yaml
+    - firstboot-script.yaml
+    - postconfig.yaml
+    - postconfig-script.yaml
+    - sshd-banner.yaml
+    - hieradata.yaml
+    - controller-stonith.yaml
+    - custom-domain.yaml
+    - overcloud-images.yaml
+    - extra-firewallrule.yaml
+    - nova-filter.yaml
+    - server-blacklist.yaml
+

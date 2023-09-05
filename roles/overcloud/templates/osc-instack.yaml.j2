@@ -1,0 +1,26 @@
+nodes:
+  - "name": "{{ osc1.name }}"
+    "pm_addr": "{{ kvm.ip }}"
+    "mac": ["{{ osc1.mac }}"]
+    "pm_type": "ipmi"
+    "pm_user": "admin"
+    "pm_password": "hpinvent"
+    "pm_port": "{{ osc1.pmport }}"
+    "capabilities": "node:controller-0,boot_option:local"
+  - "name": "{{ osc2.name }}"
+    "pm_addr": "{{ kvm.ip }}"
+    "mac": ["{{ osc2.mac }}"]
+    "pm_type": "ipmi"
+    "pm_user": "admin"
+    "pm_password": "hpinvent"
+    "pm_port": "{{ osc2.pmport }}"
+    "capabilities": "node:controller-1,boot_option:local"
+  - "name": "{{ osc3.name }}"
+    "pm_addr": "{{ kvm.ip }}"
+    "mac": ["{{ osc3.mac }}"]
+    "pm_type": "ipmi"
+    "pm_user": "admin"
+    "pm_password": "hpinvent"
+    "pm_port": "{{ osc3.pmport }}"
+    "capabilities": "node:controller-2,boot_option:local"
+

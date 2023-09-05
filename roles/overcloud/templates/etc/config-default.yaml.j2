@@ -1,0 +1,21 @@
+parameter_defaults:
+  # ------------------------------------------------------- #
+  # Default Configuration
+  # ------------------------------------------------------- #
+  DnsServers: ["8.8.8.8","168.126.63.1"]
+  DnsSearchDomains: ['{{ domain }}']
+  NtpServer: '{{ ntp1 }},{{ ntp2 }}'
+  TimeZone: 'Asia/Seoul'
+  AdminPassword: 'core*234'
+  # ------------------------------------------------------- #
+
+  # ------------------------------------------------------- #
+  # SSH Configuration
+  # ------------------------------------------------------- #
+  SshServerOptions:
+    UseDNS: 'no'
+    DenyUsers: 'skroot'
+    PasswordAuthentication: 'yes'
+    PermitRootLogin: 'no'
+    PermitEmptyPasswords: 'no'
+

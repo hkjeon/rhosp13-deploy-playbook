@@ -1,0 +1,13 @@
+resource_registry:
+  OS::TripleO::Network::Ports::ExternalVipPort: /usr/share/openstack-tripleo-heat-templates/network/ports/external.yaml
+  OS::TripleO::Network::Ports::InternalApiVipPort: /usr/share/openstack-tripleo-heat-templates/network/ports/internal_api.yaml
+  OS::TripleO::Network::Ports::RedisVipPort: /usr/share/openstack-tripleo-heat-templates/network/ports/vip.yaml
+
+parameter_defaults:
+  # ------------------------------------------------------------- #
+  ControlFixedIPs: [{'ip_address':'{{ pcs.pxevip }}'}]
+  InternalApiVirtualFixedIPs: [{'ip_address':'{{ pcs.interapivip }}'}]
+  RedisVirtualFixedIPs: [{'ip_address':'{{ pcs.redisvip }}'}]
+  PublicVirtualFixedIPs: [{'ip_address':'{{ pcs.publicapivip }}'}]
+  # ------------------------------------------------------------- #
+

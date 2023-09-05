@@ -1,0 +1,42 @@
+parameter_defaults:
+  EnableFencing: true
+  FencingConfig:
+    devices:
+    # ------------------------------------------------------- #
+    # Controller #1 Stonith Fencing
+    # ------------------------------------------------------- #
+    - agent: fence_ipmilan
+      host_mac: "{{ osc1.mac }}"
+      params:
+        login: admin
+        passwd: hpinvent
+        ipaddr: {{ kvm.ip }}
+        ipport: {{ osc1.pmport }}
+        lanplus: true
+        pcmk_host_list: {{ osc1.name }}
+    # ------------------------------------------------------- #
+    # Controller #2 Stonith Fencing
+    # ------------------------------------------------------- #
+    - agent: fence_ipmilan
+      host_mac: "{{ osc2.mac }}"
+      params:
+        login: admin
+        passwd: hpinvent
+        ipaddr: {{ kvm.ip }}
+        ipport: {{ osc2.pmport }}
+        lanplus: true
+        pcmk_host_list: {{ osc2.name }}
+    # ------------------------------------------------------- #
+    # Controller #3 Stonith Fencing
+    # ------------------------------------------------------- #
+    - agent: fence_ipmilan
+      host_mac: "{{ osc3.mac }}"
+      params:
+        login: admin
+        passwd: hpinvent
+        ipaddr: {{ kvm.ip }}
+        ipport: {{ osc3.pmport }}
+        lanplus: true
+        pcmk_host_list: {{ osc3.name }}
+    # ------------------------------------------------------- #
+

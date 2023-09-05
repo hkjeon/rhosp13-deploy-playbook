@@ -1,0 +1,19 @@
+parameter_defaults:
+  # ------------------------------------------------------- #
+  # Neutron Configuration
+  # ------------------------------------------------------- #
+  NeutronMechanismDrivers: ['openvswitch','sriovnicswitch']
+  NeutronPluginExtensions: 'qos,port_security'
+  NeutronOVSFirewallDriver: noop   # before - openvswitch
+  # ------------------------------------------------------- #
+  NeutronNetworkType: 'vlan,flat'
+  NeutronTunnelTypes: ''
+  NeutronGlobalPhysnetMtu: 9000
+  NeutronEnableIsolatedMetadata: true
+  NeutronEnableForceMetadata: true
+  NeutronFlatNetworks: '*'
+  NeutronDhcpAgentsPerNetwork: 2
+  NumDpdkInterfaceRxQueues: 2
+  NeutronDnsDomain: "{{ domain }}"
+  BondInterfaceOvsOptions: "bond_mode=active-backup"
+
