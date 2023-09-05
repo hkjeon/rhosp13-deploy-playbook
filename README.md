@@ -1,4 +1,4 @@
-# This Repository is ansible-playbook for the RHOSP13 deploy.
+# This Repository is ansible-playbook for the RHOSP13 deploy. (OSC#3 + Comp#2)
 
 Environmental Information:
 1) You need Director VM#1 OSC#3 VM and Comp#2 VM /w VBMC in the kvmhost
